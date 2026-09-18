@@ -17,7 +17,7 @@ from biblioteca_nova.api import (
 
 
 class AuthState(rx.State):
-    auth_token: rx.Cookie = rx.Cookie(name="auth_token", max_age=60 * 60 * 24 * 7)
+    auth_token: str = rx.Cookie(name="auth_token", max_age=60 * 60 * 24 * 7)
     user: dict[str, Any] = {}
     session_checked: bool = False
     auth_loading: bool = False
