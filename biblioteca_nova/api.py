@@ -141,3 +141,117 @@ def update_category(
 
 def delete_category(category_id: str, token: str = "") -> None:
     _request("DELETE", f"/categorias/{category_id}", token=token)
+
+
+def _book_payload(payload: Any) -> dict[str, str]:
+    if not isinstance(payload, dict):
+        raise APIError("A API retornou um livro inválido.")
+    fields = (
+        "id",
+        "titulo",
+        "autor",
+        "ano_publicacao",
+        "quantidade_disponivel",
+        "categoria_id",
+    )
+    if any(field not in payload for field in fields):
+        raise APIError("A API retornou um livro incompleto.")
+
+    book_id = payload.get("id")
+    title = payload.get("titulo")
+    author = payload.get("autor")
+    category_id = payload.get("categoria_id")
+    if (
+        isinstance(book_id, bool)
+        or not isinstance(book_id, (int, str))
+        or not str(book_id).isdigit()
+        or int(str(book_id)) < 1
+    ):
+        raise APIError("A API retornou um identificador de livro inválido.")
+    if title is not None and not isinstance(title, str):
+        raise APIError("A API retornou um título de livro inválido.")
+    if author is not None and not isinstance(author, str):
+        raise APIError("A API retornou um autor de livro inválido.")
+    if category_id is not None and (
+        isinstance(category_id, bool)
+        or not isinstance(category_id, int)
+        or category_id < 1
+    ):
+        raise APIError("A API retornou uma categoria de livro inválida.")
+
+    values: dict[str, str] = {
+        "id": str(book_id),
+        "titulo": title or "",
+        "autor": author or "",
+        "categoria_id": "" if category_id is None else str(category_id),
+    }
+    for field in ("ano_publicacao", "quantidade_disponivel"):
+        value = payload.get(field)
+        if value is not None and (isinstance(value, bool) or not isinstance(value, int)):
+            raise APIError(f"A API retornou o campo {field} inválido.")
+        values[field] = "" if value is None else str(value)
+    return values
+
+
+def _book_id(book_id: str) -> str:
+    if not isinstance(book_id, str) or not book_id.isdigit() or int(book_id) < 1:
+        raise APIError("O identificador do livro é inválido.")
+    return book_id
+
+
+def list_books(token: str = "") -> list[dict[str, str]]:
+    payload = _request("GET", "/livro", token=token)
+    if not isinstance(payload, list):
+        raise APIError("A API retornou uma lista de livros inválida.")
+    return [_book_payload(book) for book in payload]
+
+
+def create_book(
+    title: str,
+    author: str,
+    publication_year: int | None,
+    available_quantity: int | None,
+    category_id: int,
+    token: str = "",
+) -> dict[str, str]:
+    payload = _request(
+        "POST",
+        "/livro",
+        token=token,
+        json={
+            "titulo": title,
+            "autor": author,
+            "ano_publicacao": publication_year,
+            "quantidade_disponivel": available_quantity,
+            "categoria_id": category_id,
+        },
+    )
+    return _book_payload(payload)
+
+
+def update_book(
+    book_id: str,
+    title: str,
+    author: str,
+    publication_year: int | None,
+    available_quantity: int | None,
+    category_id: int,
+    token: str = "",
+) -> dict[str, str]:
+    payload = _request(
+        "PUT",
+        f"/livro/{_book_id(book_id)}",
+        token=token,
+        json={
+            "titulo": title,
+            "autor": author,
+            "ano_publicacao": publication_year,
+            "quantidade_disponivel": available_quantity,
+            "categoria_id": category_id,
+        },
+    )
+    return _book_payload(payload)
+
+
+def delete_book(book_id: str, token: str = "") -> None:
+    _request("DELETE", f"/livro/{_book_id(book_id)}", token=token)

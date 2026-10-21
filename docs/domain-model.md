@@ -7,12 +7,16 @@
 - `nome` (string): Nome da categoria (ex: Ficção, Tecnologia).
 - `descricao` (string): Descrição detalhada da categoria.
 
+> O schema Xano atual de categorias contém `id` e `nome`; `descricao` permanece
+> apenas no modelo conceitual e não é retornada pelo endpoint.
+
 ### 2. Livro (`livro`)
 - `id` (int): Identificador único.
 - `titulo` (string): Título do livro.
 - `autor` (string): Autor do livro.
-- `isbn` (string): Código de identificação do livro.
-- `categoria_id` (int): Chave estrangeira referenciando `categoria`.
+- `ano_publicacao` (int, opcional): Ano de publicação.
+- `quantidade_disponivel` (int, opcional): Quantidade disponível no acervo.
+- `categoria_id` (int, anulável no Xano): Identificador da categoria escolhida.
 
 ### 3. Usuário (`usuario`)
 - `id` (int): Identificador único.
@@ -32,3 +36,7 @@
 - Uma **Categoria** possui N **Livros** (1:N).
 - Um **Usuário** pode realizar N **Empréstimos** (1:N).
 - Um **Livro** pode estar presente em N **Empréstimos** ao longo do tempo (1:N).
+
+No contrato Xano atual, `categoria_id` não tem relacionamento declarado com a
+tabela de categorias. O fluxo de livros exige a seleção de categoria na
+interface, mas essa regra não é imposta pelo backend.
