@@ -81,3 +81,7 @@ Ative o ambiente virtual sempre antes de executar comandos do projeto.
 - Se o PowerShell não encontrar `py`, instale o Python e habilite sua inclusão
   no `PATH`. Se não encontrar `reflex`, confirme que o ambiente virtual está
   ativo e que a instalação das dependências terminou sem erros.
+
+## VS Code e Xano
+
+O workspace configura o interpretador `.venv`, recomenda as extensões Python e XanoScript, e prepara o Xano Developer MCP. Consulte [docs/xano-vscode.md](docs/xano-vscode.md) para os detalhes e as etapas que ainda dependem da conta Xano.
